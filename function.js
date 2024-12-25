@@ -95,6 +95,10 @@ export async function cancleQueue(id) {
             where: {id: id},
             data: {status: "คิวถูกยกเลิก", deleted_at: new Date()}
         })
+        const changeStatusReq = await prisma.request.update({
+            where: {id: queue.req_id},
+            data: {status: "รอจองคิว"}
+        })
         return changeStatusQueue
     }
 }
@@ -133,7 +137,7 @@ export async function changeQueue(queueId,studentId, reqId, timeslotId, period, 
     });
     const changeStatusReq = await prisma.request.update({
         where: {id: reqId},
-        data: {status: "จองคิวแล้ว"}
+        data: {status: "รอเข้ารับบริการ"}
     })
     return createdQueue
 }
@@ -169,7 +173,7 @@ export async function createQueue(studentId, reqId, timeslotId, period, uid) {
     });
     const changeStatusReq = await prisma.request.update({
         where: {id: reqId},
-        data: {status: "จองคิวแล้ว"}
+        data: {status: "รอเข้ารับบริการ"}
     })
     return createdQueue
 }
