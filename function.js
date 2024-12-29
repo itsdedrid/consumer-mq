@@ -119,7 +119,7 @@ export async function changeQueue(queueId,studentId, reqId, timeslotId, period, 
                 req_id: reqId,
                 timeslot_id: timeslotId,
                 period: period,
-                status: "คิวเต็ม"
+                status: "จองคิวไม่สำเร็จ"
             }
         });
         return createdQueue
@@ -146,6 +146,9 @@ export async function createQueue(studentId, reqId, timeslotId, period, uid) {
     const timeslot = await getTimeslotById(timeslotId)
     if (!timeslot) {
         throw {code: 404,error: new Error("Timeslot not found")}
+    }
+    if(timeslot.is_full[period] == true || timeslot.is_open[period] == false){
+        throw {code: 409,error: new Error("Timeslot full or closed")}
     }    
     if(timeslot.is_full[period]){
         const createdQueue = await prisma.queue.create({
@@ -155,7 +158,7 @@ export async function createQueue(studentId, reqId, timeslotId, period, uid) {
                 req_id: reqId,
                 timeslot_id: timeslotId,
                 period: period,
-                status: "คิวเต็ม"
+                status: "จองคิวไม่สำเร็จ"
             }
         });
         return createdQueue
