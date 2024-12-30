@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: . # Path to your Dockerfile directory
+    container_name: node_app
+    ports:
+      - "3002:3002" # Map the host port to the container port
+    environment:
+      RABBITMQ_HOST: rabbitmq # Reference the RabbitMQ service by its name
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # Port for RabbitMQ messaging
+      - "15672:15672" # Port for RabbitMQ management UI
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s
+      timeout: 30s
+      retries: 10
